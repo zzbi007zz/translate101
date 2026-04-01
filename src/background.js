@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'translate-selection',
     title: 'Translate "%s"',
-    contexts: ['selection'],
+    contexts: ['selection', 'editable'],
   });
 });
 
