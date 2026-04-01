@@ -104,11 +104,13 @@ Leverages Google's advanced Gemini 2.5 Flash language model for high-quality, co
 
 ### Basic Translation
 
-**Method 1: Keyboard Shortcut** (Fastest)
-1. Select any text on a webpage
+**Method 1: Keyboard Shortcut** (Fastest, Works Everywhere)
+1. Select any text on **any webpage** (including chrome:// pages, PDFs, new tabs)
 2. Press `Ctrl+Shift+E` (Windows/Linux) or `Cmd+Shift+E` (Mac)
 3. View translation in the overlay
 4. Click overlay or press `ESC` to dismiss
+
+> **Pro Tip:** Customize the keyboard shortcut at `chrome://extensions/shortcuts`
 
 **Method 2: Context Menu** (Alternative)
 1. Select any text on a webpage

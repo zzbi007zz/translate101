@@ -39,6 +39,20 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
+// Handle keyboard shortcut command
+chrome.commands.onCommand.addListener((command) => {
+  if (command === 'translate-selection') {
+    // Get active tab and trigger translation
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          action: 'translateFromHotkey',
+        });
+      }
+    });
+  }
+});
+
 async function handleTranslation(request, sendResponse) {
   const startTime = Date.now();
 

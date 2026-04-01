@@ -10,21 +10,26 @@ let currentOverlay = null;
 
 // Initialize content script
 function init() {
-  registerHotkey();
-  registerContextMenuListener();
+  registerMessageListener();
   console.log('Instant Translate content script loaded');
 }
 
-// Register listener for context menu messages
-function registerContextMenuListener() {
+// Register listener for both hotkey and context menu messages
+function registerMessageListener() {
   chrome.runtime.onMessage.addListener((message) => {
-    if (message.action === 'translateFromContextMenu') {
-      // Get current selection coordinates
+    if (message.action === 'translateFromHotkey') {
+      // Get current selection and translate
+      const selection = captureSelection();
+      if (selection) {
+        requestTranslation(selection.text, selection.coords);
+      }
+    } else if (message.action === 'translateFromContextMenu') {
+      // Context menu provides text, get coordinates
       const coords = getSelectionCoordinates();
       if (coords) {
         requestTranslation(message.text, coords);
       } else {
-        // Fallback: use middle of screen if no selection coordinates
+        // Fallback positioning
         const fallbackCoords = {
           x: window.innerWidth / 2 - 200,
           y: window.innerHeight / 2,
@@ -34,33 +39,6 @@ function registerContextMenuListener() {
       }
     }
   });
-}
-
-// Register Ctrl+Shift+E hotkey listener
-function registerHotkey() {
-  document.addEventListener('keydown', handleHotkey);
-}
-
-// Handle hotkey press
-function handleHotkey(event) {
-  // Check for Ctrl+Shift+E (or Cmd+Shift+E on Mac)
-  const modifier = event.metaKey || event.ctrlKey;
-  if (modifier && event.shiftKey && event.key.toUpperCase() === 'E') {
-    event.preventDefault();
-    onTranslateHotkey();
-  }
-}
-
-// Handle translation hotkey trigger
-function onTranslateHotkey() {
-  const selection = captureSelection();
-  if (!selection) {
-    console.log('No text selected');
-    return;
-  }
-
-  console.log('Translation requested:', selection.text.substring(0, 50));
-  requestTranslation(selection.text, selection.coords);
 }
 
 // Capture current text selection and coordinates
@@ -398,7 +376,6 @@ function clearSelectionState() {
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
-  document.removeEventListener('keydown', handleHotkey);
   destroyOverlay();
   clearSelectionState();
 });

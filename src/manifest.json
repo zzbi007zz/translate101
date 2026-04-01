@@ -5,6 +5,15 @@
   "description": "Translate selected text instantly with Ctrl+Shift+E. Powered by Gemini AI.",
   "permissions": ["storage", "contextMenus"],
   "host_permissions": ["https://generativelanguage.googleapis.com/*"],
+  "commands": {
+    "translate-selection": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "mac": "Command+Shift+E"
+      },
+      "description": "Translate selected text"
+    }
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"
