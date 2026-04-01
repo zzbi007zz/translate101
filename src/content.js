@@ -7,6 +7,7 @@ import {
 
 let currentSelection = null;
 let currentOverlay = null;
+let activeFormElement = null; // Track the active input/textarea for insertion
 
 // Initialize content script
 function init() {
@@ -48,6 +49,18 @@ function captureSelection() {
 
   const coords = getSelectionCoordinates();
   if (!coords) return null;
+
+  // Track active form element for insertion feature
+  const activeEl = document.activeElement;
+  if (
+    activeEl &&
+    (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA') &&
+    activeEl.type !== 'password'
+  ) {
+    activeFormElement = activeEl;
+  } else {
+    activeFormElement = null;
+  }
 
   currentSelection = {
     text,
@@ -192,6 +205,47 @@ function getOverlayStyles() {
 
     .overlay-translation {
       word-wrap: break-word;
+      margin-bottom: 8px;
+    }
+
+    .overlay-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .overlay-btn {
+      padding: 4px 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .overlay-btn-copy {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .overlay-btn-copy:hover {
+      background: #2563eb;
+    }
+
+    .overlay-btn-insert {
+      background: #10b981;
+      color: white;
+    }
+
+    .overlay-btn-insert:hover {
+      background: #059669;
+    }
+
+    .overlay-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     .overlay-close {
@@ -224,6 +278,38 @@ function renderOverlay(translation) {
   textDiv.className = 'overlay-translation';
   textDiv.textContent = translation;
 
+  // Action buttons container
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'overlay-actions';
+
+  // Copy button
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'overlay-btn overlay-btn-copy';
+  copyBtn.textContent = 'Copy';
+  copyBtn.title = 'Copy translation to clipboard';
+  copyBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    copyToClipboard(translation);
+  });
+
+  // Insert button (only show if we have an active form element)
+  const insertBtn = document.createElement('button');
+  insertBtn.className = 'overlay-btn overlay-btn-insert';
+  insertBtn.textContent = 'Insert';
+  insertBtn.title = 'Replace selected text with translation';
+  if (!activeFormElement) {
+    insertBtn.disabled = true;
+    insertBtn.title = 'Insert only works in text fields';
+  }
+  insertBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    insertTranslation(translation);
+  });
+
+  actionsDiv.appendChild(copyBtn);
+  actionsDiv.appendChild(insertBtn);
+
+  // Close button
   const closeBtn = document.createElement('button');
   closeBtn.className = 'overlay-close';
   closeBtn.textContent = '×';
@@ -234,6 +320,7 @@ function renderOverlay(translation) {
   });
 
   container.appendChild(textDiv);
+  container.appendChild(actionsDiv);
   container.appendChild(closeBtn);
 
   return container;
@@ -362,6 +449,92 @@ function showErrorToast(message) {
     toast.style.animation = 'slideOut 0.3s ease-in';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
+}
+
+// Show success toast notification
+function showSuccessToast(message) {
+  // Remove existing toast if any
+  const existingToast = document.getElementById('instant-translate-success-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+
+  const toast = document.createElement('div');
+  toast.id = 'instant-translate-success-toast';
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #10b981;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    z-index: 2147483647;
+    animation: slideIn 0.3s ease-out;
+  `;
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  // Auto-remove after 2 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
+
+// Copy translation to clipboard
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showSuccessToast('Copied to clipboard!');
+  } catch (error) {
+    console.error('Failed to copy:', error);
+    showErrorToast('Failed to copy to clipboard');
+  }
+}
+
+// Insert translation into active form element
+function insertTranslation(translation) {
+  if (!activeFormElement) {
+    showErrorToast('No text field selected');
+    return;
+  }
+
+  try {
+    const start = activeFormElement.selectionStart;
+    const end = activeFormElement.selectionEnd;
+    const currentValue = activeFormElement.value;
+
+    // Replace selected text with translation
+    const newValue =
+      currentValue.substring(0, start) +
+      translation +
+      currentValue.substring(end);
+
+    activeFormElement.value = newValue;
+
+    // Set cursor position after inserted text
+    const newCursorPos = start + translation.length;
+    activeFormElement.selectionStart = newCursorPos;
+    activeFormElement.selectionEnd = newCursorPos;
+
+    // Focus the element
+    activeFormElement.focus();
+
+    // Trigger input event for frameworks that listen to it
+    activeFormElement.dispatchEvent(new Event('input', { bubbles: true }));
+    activeFormElement.dispatchEvent(new Event('change', { bubbles: true }));
+
+    showSuccessToast('Translation inserted!');
+    destroyOverlay();
+  } catch (error) {
+    console.error('Failed to insert:', error);
+    showErrorToast('Failed to insert translation');
+  }
 }
 
 // Show error message (deprecated, use showErrorToast)

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Comment Fields - Instant Translate</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #1f2937;
+            border-bottom: 2px solid #fef08a;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #374151;
+        }
+        textarea, input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .contenteditable {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 100px;
+            background: white;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        .instructions {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .instructions code {
+            background: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .expected {
+            color: #059669;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        .sample-text {
+            color: #6b7280;
+            font-size: 13px;
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Instant Translate - Comment Field Test Suite</h1>
+
+    <div class="instructions">
+        <strong>Testing Instructions:</strong>
+        <ol>
+            <li>Load the extension in Chrome (chrome://extensions → Load unpacked → select <code>dist</code> folder)</li>
+            <li>Configure your Gemini API key in the extension popup</li>
+            <li>For each test case below: <strong>Select the text</strong> and press <code>Ctrl+Shift+E</code> (or <code>Cmd+Shift+E</code> on Mac)</li>
+            <li>Alternative: Right-click selected text and choose "Translate" from context menu</li>
+            <li>✅ Expected: Translation overlay appears near the selection</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 1: Textarea Comment Field ✅ FIXED</h2>
+        <p><strong>Description:</strong> Traditional comment boxes used on forums, Reddit (old), Stack Overflow</p>
+        <textarea placeholder="Select this sample text: Hello, how are you doing today? I hope everything is going well for you.">Hello, how are you doing today? I hope everything is going well for you.</textarea>
+        <p class="expected">✅ Expected: Translation should appear when text is selected</p>
+        <p class="sample-text">This was BROKEN before the fix - window.getSelection() doesn't work on textarea</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Input Text Field ✅ FIXED</h2>
+        <p><strong>Description:</strong> Single-line text inputs used for quick comments</p>
+        <input type="text" placeholder="Select this text: Good morning everyone!" value="Good morning everyone!">
+        <p class="expected">✅ Expected: Translation should appear when text is selected</p>
+        <p class="sample-text">This was BROKEN before the fix - window.getSelection() doesn't work on input</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Password Field ❌ EXCLUDED</h2>
+        <p><strong>Description:</strong> Password fields should NOT translate for security</p>
+        <input type="password" placeholder="Password" value="MySecretPassword123">
+        <p class="expected">❌ Expected: Translation should NOT work (password fields are excluded)</p>
+        <p class="sample-text">Security feature - we don't want to send passwords to translation API</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Contenteditable Div ✅ REGRESSION TEST</h2>
+        <p><strong>Description:</strong> Modern comment systems (Facebook, GitHub, Medium)</p>
+        <div class="contenteditable" contenteditable="true">This is a contenteditable div used by modern platforms like Facebook and GitHub for comments. Select this text to test!</div>
+        <p class="expected">✅ Expected: Translation should still work (ensure no regression)</p>
+        <p class="sample-text">This ALREADY WORKED before the fix - should continue working</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 5: Multi-line Textarea ✅ FIXED</h2>
+        <p><strong>Description:</strong> Large comment boxes with multiple lines</p>
+        <textarea rows="8">Line 1: This is a multi-line comment
+Line 2: Select any portion of this text
+Line 3: The overlay should appear near the textarea
+Line 4: It may not be pixel-perfect on the exact line
+Line 5: But it should be visible and readable
+Line 6: This is acceptable UX for MVP
+Line 7: Test different selections
+Line 8: Try middle lines and end lines too</textarea>
+        <p class="expected">✅ Expected: Overlay appears near textarea (may be at top, not exact line)</p>
+        <p class="sample-text">Note: Overlay uses textarea bounding box, not exact selection line (acceptable for MVP)</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 6: Context Menu on Textarea ✅ FIXED</h2>
+        <p><strong>Description:</strong> Right-click menu should show "Translate" option on form fields</p>
+        <textarea placeholder="Select this text and right-click">The quick brown fox jumps over the lazy dog. Select this sentence and right-click to see the context menu.</textarea>
+        <p class="expected">✅ Expected: Context menu shows "Translate [text]" option</p>
+        <p class="sample-text">This was BROKEN before - context menu only showed on document selections</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 7: Regular Paragraph Text ✅ REGRESSION TEST</h2>
+        <p><strong>Description:</strong> Regular text selection on the page</p>
+        <p style="background: white; padding: 15px; border: 1px solid #d1d5db; border-radius: 4px;">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Select any part of this paragraph to ensure regular text selection still works perfectly. This is a regression test to make sure we didn't break existing functionality.
+        </p>
+        <p class="expected">✅ Expected: Translation should work normally</p>
+        <p class="sample-text">This ALREADY WORKED before - should continue working</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 8: Empty Selection ⚠️ EDGE CASE</h2>
+        <p><strong>Description:</strong> Click cursor in textarea without selecting text</p>
+        <textarea placeholder="Click inside but don't select text">Click inside this textarea without selecting any text, then press Ctrl+Shift+E</textarea>
+        <p class="expected">⚠️ Expected: Nothing happens (no error, silent failure is acceptable)</p>
+        <p class="sample-text">Edge case: User triggers hotkey with cursor but no selection</p>
+    </div>
+
+    <div class="test-section" style="background: #dcfce7; border-color: #86efac;">
+        <h2>🎯 Success Criteria Summary</h2>
+        <ul>
+            <li>✅ Test 1 (Textarea): Translation appears</li>
+            <li>✅ Test 2 (Input text): Translation appears</li>
+            <li>❌ Test 3 (Password): Translation does NOT appear</li>
+            <li>✅ Test 4 (Contenteditable): Still works (no regression)</li>
+            <li>✅ Test 5 (Multi-line): Translation appears near textarea</li>
+            <li>✅ Test 6 (Context menu): "Translate" option appears on right-click</li>
+            <li>✅ Test 7 (Paragraph): Still works (no regression)</li>
+            <li>⚠️ Test 8 (Empty): No error thrown</li>
+        </ul>
+    </div>
+
+    <div class="test-section" style="background: #e0e7ff; border-color: #a5b4fc;">
+        <h2>🔧 Debugging Tips</h2>
+        <p>If translation doesn't work:</p>
+        <ol>
+            <li>Open Chrome DevTools (F12)</li>
+            <li>Check Console tab for errors</li>
+            <li>Look for "Instant Translate content script loaded" message</li>
+            <li>Verify extension is enabled in chrome://extensions</li>
+            <li>Make sure API key is configured in extension popup</li>
+            <li>Check Network tab for API calls when translation is triggered</li>
+        </ol>
+        <p><strong>Expected Console Output:</strong></p>
+        <pre style="background: #1f2937; color: #f9fafb; padding: 10px; border-radius: 4px; overflow-x: auto;">Instant Translate content script loaded
+Requesting translation...
+Translation received: [translated text]
+Latency: [XX] ms</pre>
+    </div>
+</body>
+</html>
