@@ -3,7 +3,7 @@
   "name": "Instant Translate",
   "version": "0.1.0",
   "description": "Translate selected text instantly with Ctrl+Shift+E. Powered by Gemini AI.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "contextMenus"],
   "host_permissions": ["https://generativelanguage.googleapis.com/*"],
   "background": {
     "service_worker": "background.js",

@@ -6,6 +6,13 @@ import { retryWithBackoff } from './utils/retry-helper';
 // Service worker lifecycle events
 chrome.runtime.onInstalled.addListener(() => {
   console.log('Instant Translate extension installed');
+
+  // Create context menu for text selection
+  chrome.contextMenus.create({
+    id: 'translate-selection',
+    title: 'Translate "%s"',
+    contexts: ['selection'],
+  });
 });
 
 self.addEventListener('activate', () => {
@@ -19,6 +26,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // Keep channel open for async response
   }
   return false;
+});
+
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === 'translate-selection' && info.selectionText) {
+    // Send message to content script to show translation
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'translateFromContextMenu',
+      text: info.selectionText,
+    });
+  }
 });
 
 async function handleTranslation(request, sendResponse) {

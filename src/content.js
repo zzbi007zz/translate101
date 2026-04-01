@@ -11,7 +11,29 @@ let currentOverlay = null;
 // Initialize content script
 function init() {
   registerHotkey();
+  registerContextMenuListener();
   console.log('Instant Translate content script loaded');
+}
+
+// Register listener for context menu messages
+function registerContextMenuListener() {
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === 'translateFromContextMenu') {
+      // Get current selection coordinates
+      const coords = getSelectionCoordinates();
+      if (coords) {
+        requestTranslation(message.text, coords);
+      } else {
+        // Fallback: use middle of screen if no selection coordinates
+        const fallbackCoords = {
+          x: window.innerWidth / 2 - 200,
+          y: window.innerHeight / 2,
+          height: 0,
+        };
+        requestTranslation(message.text, fallbackCoords);
+      }
+    }
+  });
 }
 
 // Register Ctrl+Shift+E hotkey listener
@@ -23,7 +45,7 @@ function registerHotkey() {
 function handleHotkey(event) {
   // Check for Ctrl+Shift+E (or Cmd+Shift+E on Mac)
   const modifier = event.metaKey || event.ctrlKey;
-  if (modifier && event.shiftKey && event.key === 'E') {
+  if (modifier && event.shiftKey && event.key.toUpperCase() === 'E') {
     event.preventDefault();
     onTranslateHotkey();
   }

@@ -103,10 +103,18 @@ Leverages Google's advanced Gemini 2.5 Flash language model for high-quality, co
 ## 🎯 Usage
 
 ### Basic Translation
+
+**Method 1: Keyboard Shortcut** (Fastest)
 1. Select any text on a webpage
 2. Press `Ctrl+Shift+E` (Windows/Linux) or `Cmd+Shift+E` (Mac)
 3. View translation in the overlay
 4. Click overlay or press `ESC` to dismiss
+
+**Method 2: Context Menu** (Alternative)
+1. Select any text on a webpage
+2. Right-click on the selection
+3. Click **"Translate [text]"** from the context menu
+4. View translation in the overlay
 
 ### Settings
 - **API Key**: Your Google Gemini API key (required)
