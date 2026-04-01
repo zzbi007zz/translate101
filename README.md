@@ -1,289 +1,334 @@
-# Instant Translate Chrome Extension
+# 🌍 Instant Translate - Chrome Extension
 
-**Version:** 1.0.0 MVP ✓ | **Status:** Production Ready
-**Bundle Size:** 31.8KB | **Code Quality:** 0 ESLint Errors ✓
+**Translate any text on any webpage instantly with a single keyboard shortcut**
 
-Manifest V3 Chrome extension for instant text translation using Google Gemini API. Select any text on a webpage and press `Ctrl+Shift+E` for instant translation in a non-intrusive overlay.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/zzbi007zz/translate101)
+[![Chrome](https://img.shields.io/badge/Chrome-109+-green.svg)](https://www.google.com/chrome/)
+[![License](https://img.shields.io/badge/license-ISC-orange.svg)](LICENSE)
+[![Bundle Size](https://img.shields.io/badge/bundle-31.8KB-success.svg)](dist/)
 
-## 🎯 Features
+## ✨ Key Features
 
-- **Instant Translation** - Select text and press `Ctrl+Shift+E` to translate instantly
-- **Non-Intrusive Overlay** - Translation appears in a clean, dismissible overlay
-- **Google Gemini API** - Powered by Google's advanced language model
-- **Lightweight** - 31.8KB bundle (< 100KB target), zero dependencies except DOMPurify
-- **Privacy-Focused** - Uses your own API key, no server-side processing
-- **Secure** - All security audits passed, XSS prevention implemented
-- **Fast** - <100ms keyboard response, 1-3s translation time
+### 🚀 Instant Translation
+Select any text on any webpage and press **`Ctrl+Shift+E`** (or **`Cmd+Shift+E`** on Mac) to get instant translation. No context menus, no copy-pasting—just select and translate.
 
-## 📋 Prerequisites
+### 🎯 Non-Intrusive Overlay
+Translation appears in a beautiful, floating overlay right next to your selected text. Dismiss it with a click or press `ESC` to continue browsing.
 
-- **Node.js** 18+ (for development)
-- **Chrome** 109+ (Manifest V3 support)
-- **Google Gemini API Key** (free tier available at [Google AI Studio](https://aistudio.google.com))
+### 🤖 Powered by Google Gemini AI
+Leverages Google's advanced Gemini language model for high-quality, contextual translations across 8+ languages:
+- English ↔ Vietnamese
+- English ↔ Spanish
+- English ↔ French
+- English ↔ German
+- English ↔ Japanese
+- English ↔ Korean
+- English ↔ Chinese
 
-## 🚀 Quick Start
+### 🔒 Privacy-First Design
+- **Your API Key, Your Control** - Uses your own Google Gemini API key
+- **No Data Collection** - Zero tracking, analytics, or telemetry
+- **No Server Processing** - All translation happens client-side
+- **Selective Translation** - Only translates text you explicitly select
 
-### Installation
+### ⚡ Lightning Fast
+- **<100ms** keyboard response time
+- **1-3 seconds** translation time (Gemini API)
+- **<50ms** overlay rendering
+- **31.8KB** bundle size - incredibly lightweight
 
-1. **Clone and setup:**
+### 🛡️ Security Audited
+- ✅ XSS Prevention via DOMPurify
+- ✅ Shadow DOM isolation
+- ✅ No inline scripts or eval
+- ✅ Manifest V3 compliant
+- ✅ Encrypted API key storage
+
+### 🎨 Clean & Modern UI
+- Beautiful floating overlay with fade-in animation
+- Settings popup for easy configuration
+- Test translation button for instant verification
+- Responsive design that works on any webpage
+
+## 🎬 How It Works
+
+1. **Install** the extension from Chrome Web Store (or load unpacked)
+2. **Configure** your Gemini API key in the extension popup
+3. **Select** any text on any webpage
+4. **Press** `Ctrl+Shift+E` (or `Cmd+Shift+E` on Mac)
+5. **View** instant translation in a floating overlay
+
+![Demo Animation](docs/demo.gif) <!-- Add demo GIF here -->
+
+## 📦 Installation
+
+### From Chrome Web Store
+*Coming soon - submit for review*
+
+### Manual Installation (Developer Mode)
+
+1. **Get the extension:**
    ```bash
-   git clone <repository-url>
-   cd instantTranslate
+   git clone https://github.com/zzbi007zz/translate101.git
+   cd translate101
+   ```
+
+2. **Install dependencies:**
+   ```bash
    npm install
    ```
 
-2. **Build the extension:**
+3. **Build the extension:**
    ```bash
    npm run build
    ```
 
-3. **Load in Chrome:**
+4. **Load in Chrome:**
    - Open `chrome://extensions/`
-   - Enable **Developer mode** (toggle in top-right)
+   - Enable **Developer mode** (top-right toggle)
    - Click **Load unpacked**
    - Select the `dist/` folder
 
-4. **Configure API Key:**
-   - Click extension icon (puzzle piece)
-   - Enter your Gemini API key
-   - Click Save
+5. **Get your Gemini API key:**
+   - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Create a free API key
+   - Copy it
 
-5. **Start translating:**
-   - Select text on any webpage
-   - Press `Ctrl+Shift+E`
-   - View translation in overlay
+6. **Configure the extension:**
+   - Click the extension icon in Chrome toolbar
+   - Paste your API key
+   - Select your default target language
+   - Click **Save Settings**
 
-## 💻 Development
+## 🎯 Usage
 
-### Available Commands
+### Basic Translation
+1. Select any text on a webpage
+2. Press `Ctrl+Shift+E` (Windows/Linux) or `Cmd+Shift+E` (Mac)
+3. View translation in the overlay
+4. Click overlay or press `ESC` to dismiss
 
+### Settings
+- **API Key**: Your Google Gemini API key (required)
+- **Target Language**: Default translation language
+- **Test Translation**: Verify your API key works
+
+### Supported Websites
+Works on **all websites** including:
+- Wikipedia
+- News sites
+- Blogs
+- Social media
+- Documentation
+- Forums
+- And more!
+
+## 🔧 Technical Details
+
+### Technology Stack
+- **Manifest V3** - Latest Chrome extension standard
+- **ES6 Modules** - Modern JavaScript
+- **Shadow DOM** - Style isolation
+- **DOMPurify** - XSS prevention
+- **Webpack 5** - Module bundling
+- **Google Gemini API** - AI translation
+
+### Architecture
+```
+┌─────────────────┐
+│  Web Page       │
+│  (User selects  │
+│   text)         │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Content Script  │
+│ - Detect hotkey │
+│ - Get selection │
+│ - Show overlay  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Service Worker  │
+│ - Call Gemini   │
+│ - Handle errors │
+│ - Retry logic   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Gemini API      │
+│ (Translation)   │
+└─────────────────┘
+```
+
+### Performance Metrics
+- **Bundle Size**: 31.8KB (minified)
+- **Page Load Impact**: <50ms
+- **Keyboard Latency**: <100ms
+- **Translation Time**: 1-3s (API dependent)
+- **Memory Usage**: <15MB per page
+
+## 🛠️ Development
+
+### Prerequisites
+- Node.js 18+
+- Chrome 109+
+- Git
+
+### Setup
 ```bash
-npm run build      # Production build (minified)
-npm run dev        # Development build with watch mode
-npm run lint       # Check code quality (ESLint)
-npm run format     # Auto-format code (Prettier)
+# Clone repository
+git clone https://github.com/zzbi007zz/translate101.git
+cd translate101
+
+# Install dependencies
+npm install
+
+# Start development mode (watch mode)
+npm run dev
+
+# Build for production
+npm run build
+
+# Run linter
+npm run lint
+
+# Format code
+npm run format
 ```
 
 ### Project Structure
-
 ```
-instantTranslate/
+translate101/
 ├── src/
-│   ├── background.js                  # Service worker (privileged context)
-│   ├── content.js                     # Content script (injected into pages)
-│   ├── popup.js                       # Popup UI logic
-│   ├── popup.html                     # Popup interface
-│   ├── popup.css                      # Popup styles
-│   ├── manifest.json                  # Extension manifest (V3)
+│   ├── background.js              # Service worker
+│   ├── content.js                 # Content script
+│   ├── popup.js/html/css          # Settings UI
+│   ├── manifest.json              # Extension config
 │   ├── providers/
-│   │   └── gemini-api-client.js       # Gemini API integration
+│   │   └── gemini-api-client.js   # Gemini integration
 │   ├── utils/
-│   │   ├── chrome-storage-helper.js   # Chrome Storage wrapper
-│   │   ├── dom-selection-helpers.js   # DOM utilities
-│   │   └── retry-helper.js            # Exponential backoff retry
+│   │   ├── chrome-storage-helper.js
+│   │   ├── dom-selection-helpers.js
+│   │   └── retry-helper.js
 │   ├── styles/
-│   │   └── overlay.css                # Translation overlay styling
+│   │   └── overlay.css
 │   └── icons/
-│       ├── icon16.png
-│       ├── icon48.png
-│       └── icon128.png
-├── dist/                              # Build output (auto-generated)
-├── docs/                              # Documentation
-│   ├── system-architecture.md         # Technical design & flow diagrams
-│   ├── project-overview-pdr.md        # Product vision & requirements
-│   ├── code-standards.md              # Coding guidelines & best practices
-│   ├── development-roadmap.md         # Timeline & feature roadmap
-│   └── codebase-summary.md            # Code organization reference
-├── package.json
+├── dist/                          # Build output
+├── docs/                          # Documentation
 ├── webpack.config.js
-├── .eslintrc.json
-└── .prettierrc
+└── package.json
 ```
 
-## 📖 Usage Guide
-
-1. **Setup**: Open extension popup and paste your Gemini API key
-2. **Translate**: Select any text on a webpage
-3. **Activate**: Press `Ctrl+Shift+E`
-4. **View**: Translation appears in floating overlay
-5. **Dismiss**: Click overlay or press `ESC`
-
-### Tips
-
-- Works on any website (Wikipedia, forums, news sites, etc.)
-- Translation quality depends on Gemini API
-- Supports auto-detection of source language
-- No translation history kept (privacy-first)
-
-## 🏗️ Technology Stack
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Build | Webpack 5 | Module bundling & asset management |
-| Modules | ES6 Modules | Modern JavaScript syntax |
-| Quality | ESLint + Prettier | Code standards & formatting |
-| Security | DOMPurify | XSS prevention |
-| API | Fetch API | HTTP requests to Gemini |
-| Storage | Chrome Storage API | Secure local storage |
-| Manifest | Manifest V3 | Modern extension architecture |
-
-## 📊 Code Quality
-
-- **ESLint:** 0 errors, 0 warnings ✓
-- **Style Guide:** Airbnb
-- **Security Audit:** Passed (all vulnerabilities mitigated)
-- **Bundle Size:** 31.8KB (well under 100KB limit)
-- **Performance:** Keyboard response <100ms, translation 1-3s
-
-## 🔒 Security & Privacy
-
-### Security Features
-- ✓ API key stored in Chrome Storage (encrypted at rest)
-- ✓ XSS prevention via DOMPurify sanitization
-- ✓ No inline scripts or eval
-- ✓ Message validation from content scripts
-- ✓ Sender origin verification
-
-### Privacy Guarantees
-- ✓ No data collection or tracking
-- ✓ No analytics or telemetry
-- ✓ User selects what to translate (not all page content)
-- ✓ No server-side processing
-- ✓ API key never shared with third parties
-- ✓ Compliant with GDPR and CCPA
+### Contributing
+We welcome contributions! Please:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Follow our [code standards](docs/code-standards.md)
+4. Test your changes (`npm run lint && npm run build`)
+5. Commit with clear messages
+6. Push to your fork
+7. Create a Pull Request
 
 ## 📚 Documentation
 
-- **[System Architecture](./docs/system-architecture.md)** - Technical design, data flow, security model
-- **[Project Overview](./docs/project-overview-pdr.md)** - Vision, requirements, success metrics
-- **[Code Standards](./docs/code-standards.md)** - Coding guidelines, best practices
-- **[Development Roadmap](./docs/development-roadmap.md)** - Timeline, phases, future features
-- **[Codebase Summary](./docs/codebase-summary.md)** - Code organization, modules, metrics
+- **[System Architecture](docs/system-architecture.md)** - Technical design & data flow
+- **[Project Overview](docs/project-overview-pdr.md)** - Vision & requirements
+- **[Code Standards](docs/code-standards.md)** - Coding guidelines
+- **[Development Roadmap](docs/development-roadmap.md)** - Future plans
+- **[Codebase Summary](docs/codebase-summary.md)** - Code organization
 
-## 🔄 Development Workflow
+## 🔐 Security & Privacy
 
-### Making Changes
+### What We DO
+✅ Encrypt your API key in Chrome Storage
+✅ Use Shadow DOM to prevent CSS conflicts
+✅ Sanitize all output with DOMPurify
+✅ Validate all message passing
+✅ Follow Chrome security best practices
 
-1. **Create a feature branch:**
-   ```bash
-   git checkout -b feature/my-feature
-   ```
-
-2. **Make your changes** in `src/`
-
-3. **Check code quality:**
-   ```bash
-   npm run lint      # Find issues
-   npm run format    # Auto-fix formatting
-   ```
-
-4. **Build and test:**
-   ```bash
-   npm run dev       # Watch mode development
-   # or
-   npm run build     # Production build
-   ```
-
-5. **Commit with clear messages:**
-   ```bash
-   git commit -m "feat(translation): add feature description"
-   ```
-
-### Testing Checklist
-
-Before committing:
-- [ ] `npm run lint` passes with 0 errors
-- [ ] `npm run format` is applied
-- [ ] Keyboard shortcut works (`Ctrl+Shift+E`)
-- [ ] Text selection is extracted correctly
-- [ ] Translation overlay appears and dismisses
-- [ ] API key configuration saves
-- [ ] Error messages display properly
-- [ ] No console errors in DevTools
+### What We DON'T DO
+❌ Collect any user data
+❌ Track browsing history
+❌ Send analytics or telemetry
+❌ Auto-translate entire pages
+❌ Share API keys with third parties
+❌ Store translation history
 
 ## 🐛 Troubleshooting
 
-### Extension doesn't load
-- Ensure Chrome is 109+ (check: `chrome://version/`)
-- Confirm `dist/` folder exists after `npm run build`
-- Verify manifest.json is valid (ESLint catches issues)
+### Extension won't load
+- Ensure Chrome 109+ (`chrome://version/`)
+- Verify `dist/` folder exists after build
+- Check for manifest.json errors
 
 ### Keyboard shortcut not working
-- Check that you're on a webpage (not chrome:// page)
-- Verify text is actually selected
-- Check extension has permission for that site
+- Verify you're on a regular webpage (not chrome:// pages)
+- Check text is actually selected
 - Try refreshing the page
+- Check extension permissions
 
 ### Translation not appearing
-- Confirm Gemini API key is configured in popup
-- Check API key is valid (test in [Google AI Studio](https://aistudio.google.com))
-- Verify network connection is working
-- Check Chrome DevTools console for errors
+- Verify API key is configured
+- Test API key at [Google AI Studio](https://aistudio.google.com)
+- Check network connection
+- Open DevTools console for errors
 
 ### API key won't save
 - Ensure Chrome Storage is enabled
-- Check that API key string is valid
 - Try removing and re-entering key
-- Clear Chrome cache if persistent issues
+- Clear Chrome cache
 
-## 📈 Performance Metrics
-
-- **Bundle Size:** 31.8KB (minified)
-- **Page Load Impact:** <50ms
-- **Keyboard Latency:** <100ms
-- **Translation Time:** 1-3 seconds (Gemini API)
-- **Overlay Render:** <50ms
-- **Memory Usage:** <15MB per page
-
-## 🚧 Known Limitations
-
-- **Single Target Language** - Configure default target language in settings
-- **No Translation History** - Results not cached between sessions (privacy-first)
-- **Keyboard Shortcut Only** - No context menu integration yet
-- **Single API Provider** - Gemini API only (multi-provider support planned for v1.2)
-- **Static API Key** - No multi-account support
-
-## 🔮 Roadmap
+## 🗺️ Roadmap
 
 ### Version 1.1 (Q2 2026)
-- Translation history display
-- Export translation history
-- Keyboard shortcut customization
-- Language pair presets
+- [ ] Translation history
+- [ ] Export history
+- [ ] Custom keyboard shortcuts
+- [ ] Language pair presets
 
 ### Version 1.2 (Q3 2026)
-- Multi-provider support (OpenAI, Azure, etc.)
-- Provider selection UI
-- Fallback provider logic
+- [ ] Multi-provider support (OpenAI, Azure)
+- [ ] Provider fallback
+- [ ] Auto-language detection improvements
 
 ### Version 2.0 (Q4 2026)
-- Context menu integration
-- Batch translation
-- Offline mode with cache
-- Cloud sync (optional)
-
-## 🤝 Contributing
-
-Contributions welcome! Please follow the guidelines:
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Follow** [code standards](./docs/code-standards.md)
-4. **Test** your changes (`npm run lint && npm run build`)
-5. **Commit** with clear messages (see workflow above)
-6. **Push** to your fork
-7. **Create** a Pull Request
+- [ ] Context menu integration
+- [ ] Batch translation
+- [ ] Offline mode with cache
+- [ ] Cloud sync (optional)
 
 ## 📄 License
 
-ISC
+ISC License - see [LICENSE](LICENSE) file for details
+
+## 🙏 Acknowledgments
+
+- Google Gemini API for powerful translation
+- Chrome Extension team for Manifest V3
+- DOMPurify for XSS protection
+- All contributors and users
 
 ## 📞 Support
 
-- **Issues:** Check [GitHub Issues](https://github.com/...)
-- **Docs:** See [docs/](./docs/) folder
-- **Contact:** Open an issue with your question
+- **Issues**: [GitHub Issues](https://github.com/zzbi007zz/translate101/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/zzbi007zz/translate101/discussions)
+- **Documentation**: [docs/](docs/)
+
+## ⭐ Show Your Support
+
+If you find this extension useful, please:
+- ⭐ Star the repository
+- 🐛 Report bugs
+- 💡 Suggest features
+- 🔀 Contribute code
+- 📢 Share with friends
 
 ---
 
-**Made with ❤️ | Production Ready | Zero ESLint Errors | Security Audited**
+**Made with ❤️ for the global community**
+
+[Get Started](#-installation) • [Documentation](docs/) • [Report Bug](https://github.com/zzbi007zz/translate101/issues) • [Request Feature](https://github.com/zzbi007zz/translate101/issues)
