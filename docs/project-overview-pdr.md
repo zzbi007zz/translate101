@@ -226,8 +226,10 @@ A minimal, fast, privacy-respecting translation extension that:
 ## API Integration
 
 ### Gemini API
-- **Endpoint:** `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`
-- **Model:** Using `gemini-1.5-flash` (fastest, most cost-effective for translation). Alternative models: `gemini-1.5-pro`, `gemini-2.0-flash-exp`
+- **Endpoint:** `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`
+- **Model:** Using `gemini-2.5-flash` (stable, production-ready, best price-performance)
+- **Alternative Models:** `gemini-2.5-pro` (advanced), `gemini-3-flash-preview` (cutting-edge)
+- **Note:** The 1.5 series is deprecated as of 2026. Gemini 2.5/3.x series are current.
 - **Authentication:** API key in request header
 - **Rate Limiting:** Per-user quota (managed by Google)
 - **Response Format:** JSON with generation content
