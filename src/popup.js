@@ -16,11 +16,20 @@ let statusMessage;
 let settingsForm;
 
 // Initialize popup
-document.addEventListener('DOMContentLoaded', () => {
+// Fix: Handle ES module deferred loading - check if DOM is already ready
+function init() {
   initializeElements();
   loadSettings();
   registerEventListeners();
-});
+}
+
+// Check DOM ready state and execute immediately if already loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  // DOM already loaded, execute immediately
+  init();
+}
 
 function initializeElements() {
   apiKeyInput = document.getElementById('api-key');
