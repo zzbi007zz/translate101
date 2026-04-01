@@ -15,6 +15,20 @@ function init() {
   console.log('Instant Translate content script loaded');
 }
 
+// Track active form element for insertion feature
+function trackActiveFormElement() {
+  const activeEl = document.activeElement;
+  if (
+    activeEl &&
+    (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA') &&
+    activeEl.type !== 'password'
+  ) {
+    activeFormElement = activeEl;
+  } else {
+    activeFormElement = null;
+  }
+}
+
 // Register listener for both hotkey and context menu messages
 function registerMessageListener() {
   chrome.runtime.onMessage.addListener((message) => {
@@ -25,8 +39,10 @@ function registerMessageListener() {
         requestTranslation(selection.text, selection.coords);
       }
     } else if (message.action === 'translateFromContextMenu') {
-      // Context menu provides text, get coordinates
+      // Context menu provides text, get coordinates and track active element
       const coords = getSelectionCoordinates();
+      trackActiveFormElement();
+
       if (coords) {
         requestTranslation(message.text, coords);
       } else {
@@ -51,16 +67,7 @@ function captureSelection() {
   if (!coords) return null;
 
   // Track active form element for insertion feature
-  const activeEl = document.activeElement;
-  if (
-    activeEl &&
-    (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA') &&
-    activeEl.type !== 'password'
-  ) {
-    activeFormElement = activeEl;
-  } else {
-    activeFormElement = null;
-  }
+  trackActiveFormElement();
 
   currentSelection = {
     text,
