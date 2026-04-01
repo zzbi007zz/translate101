@@ -18,14 +18,25 @@ function init() {
 // Track active form element for insertion feature
 function trackActiveFormElement() {
   const activeEl = document.activeElement;
-  if (
+  console.log('[Debug] Active element:', activeEl?.tagName, activeEl?.type, 'contentEditable:', activeEl?.contentEditable);
+
+  // Check for traditional form fields (input/textarea)
+  const isFormField =
     activeEl &&
     (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA') &&
-    activeEl.type !== 'password'
-  ) {
+    activeEl.type !== 'password';
+
+  // Check for contenteditable elements (modern comment systems)
+  const isContentEditable =
+    activeEl &&
+    (activeEl.contentEditable === 'true' || activeEl.contentEditable === 'plaintext-only');
+
+  if (isFormField || isContentEditable) {
     activeFormElement = activeEl;
+    console.log('[Debug] Form element tracked for insertion:', activeEl.tagName, isContentEditable ? '(contenteditable)' : '');
   } else {
     activeFormElement = null;
+    console.log('[Debug] No form element tracked (not input/textarea/contenteditable or is password)');
   }
 }
 
@@ -304,10 +315,17 @@ function renderOverlay(translation) {
   insertBtn.className = 'overlay-btn overlay-btn-insert';
   insertBtn.textContent = 'Insert';
   insertBtn.title = 'Replace selected text with translation';
+
+  console.log('[Debug] Rendering overlay - activeFormElement:', activeFormElement?.tagName);
+
   if (!activeFormElement) {
     insertBtn.disabled = true;
     insertBtn.title = 'Insert only works in text fields';
+    console.log('[Debug] Insert button DISABLED - no active form element');
+  } else {
+    console.log('[Debug] Insert button ENABLED - form element available');
   }
+
   insertBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     insertTranslation(translation);
@@ -512,29 +530,57 @@ function insertTranslation(translation) {
   }
 
   try {
-    const start = activeFormElement.selectionStart;
-    const end = activeFormElement.selectionEnd;
-    const currentValue = activeFormElement.value;
+    // Check if it's a contenteditable element
+    const isContentEditable =
+      activeFormElement.contentEditable === 'true' ||
+      activeFormElement.contentEditable === 'plaintext-only';
 
-    // Replace selected text with translation
-    const newValue =
-      currentValue.substring(0, start) +
-      translation +
-      currentValue.substring(end);
+    if (isContentEditable) {
+      // Handle contenteditable elements (modern comment systems like Reddit, Facebook)
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(translation));
 
-    activeFormElement.value = newValue;
+        // Move cursor to end of inserted text
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } else {
+        // Fallback: replace all content
+        activeFormElement.textContent = translation;
+      }
 
-    // Set cursor position after inserted text
-    const newCursorPos = start + translation.length;
-    activeFormElement.selectionStart = newCursorPos;
-    activeFormElement.selectionEnd = newCursorPos;
+      // Trigger input event for React/Vue
+      activeFormElement.dispatchEvent(new Event('input', { bubbles: true }));
+      activeFormElement.dispatchEvent(new Event('change', { bubbles: true }));
+    } else {
+      // Handle traditional input/textarea elements
+      const start = activeFormElement.selectionStart;
+      const end = activeFormElement.selectionEnd;
+      const currentValue = activeFormElement.value;
+
+      // Replace selected text with translation
+      const newValue =
+        currentValue.substring(0, start) +
+        translation +
+        currentValue.substring(end);
+
+      activeFormElement.value = newValue;
+
+      // Set cursor position after inserted text
+      const newCursorPos = start + translation.length;
+      activeFormElement.selectionStart = newCursorPos;
+      activeFormElement.selectionEnd = newCursorPos;
+
+      // Trigger input event for frameworks that listen to it
+      activeFormElement.dispatchEvent(new Event('input', { bubbles: true }));
+      activeFormElement.dispatchEvent(new Event('change', { bubbles: true }));
+    }
 
     // Focus the element
     activeFormElement.focus();
-
-    // Trigger input event for frameworks that listen to it
-    activeFormElement.dispatchEvent(new Event('input', { bubbles: true }));
-    activeFormElement.dispatchEvent(new Event('change', { bubbles: true }));
 
     showSuccessToast('Translation inserted!');
     destroyOverlay();
