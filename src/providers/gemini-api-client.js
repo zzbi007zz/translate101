@@ -1,6 +1,6 @@
 // Gemini API adapter for translation
 
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 export async function translateWithGemini(text, targetLang, apiKey) {
   const prompt = buildPrompt(text, targetLang);

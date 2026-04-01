@@ -389,8 +389,10 @@ async function callGeminiAPI(text, apiKey) {
   }
 
   // Use HTTPS
+  // Note: Using `gemini-1.5-flash` (fastest, most cost-effective for translation)
+  // Alternative models: `gemini-1.5-pro`, `gemini-2.0-flash-exp`
   const response = await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
     {
       method: 'POST',
       headers: {

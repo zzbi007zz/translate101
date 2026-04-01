@@ -16,7 +16,7 @@ Select any text on any webpage and press **`Ctrl+Shift+E`** (or **`Cmd+Shift+E`*
 Translation appears in a beautiful, floating overlay right next to your selected text. Dismiss it with a click or press `ESC` to continue browsing.
 
 ### 🤖 Powered by Google Gemini AI
-Leverages Google's advanced Gemini language model for high-quality, contextual translations across 8+ languages:
+Leverages Google's advanced Gemini 1.5 Flash language model for high-quality, contextual translations across 8+ languages:
 - English ↔ Vietnamese
 - English ↔ Spanish
 - English ↔ French
@@ -131,7 +131,7 @@ Works on **all websites** including:
 - **Shadow DOM** - Style isolation
 - **DOMPurify** - XSS prevention
 - **Webpack 5** - Module bundling
-- **Google Gemini API** - AI translation
+- **Google Gemini API** - AI translation (using `gemini-1.5-flash` model)
 
 ### Architecture
 ```
