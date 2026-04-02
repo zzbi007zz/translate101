@@ -12,6 +12,11 @@
 ### 🚀 Instant Translation
 Select any text on any webpage and press **`Ctrl+Shift+E`** (or **`Cmd+Shift+E`** on Mac) to get instant translation. No context menus, no copy-pasting—just select and translate.
 
+### 📝 Copy & Insert Actions
+Translation overlay includes action buttons:
+- **Copy** - Copy translation to clipboard
+- **Insert** - Replace selected text with translation (works in comment fields, text inputs, contenteditable elements)
+
 ### 🎯 Non-Intrusive Overlay
 Translation appears in a beautiful, floating overlay right next to your selected text. Dismiss it with a click or press `ESC` to continue browsing.
 
@@ -128,9 +133,10 @@ Works on **all websites** including:
 - Wikipedia
 - News sites
 - Blogs
-- Social media
+- Social media (Reddit, Facebook, Twitter)
 - Documentation
 - Forums
+- Comment fields (textarea, input, contenteditable)
 - And more!
 
 ## 🔧 Technical Details

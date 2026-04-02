@@ -8,6 +8,7 @@ import {
 let currentSelection = null;
 let currentOverlay = null;
 let activeFormElement = null; // Track the active input/textarea for insertion
+let savedRange = null; // Save the selection range for contenteditable
 
 // Initialize content script
 function init() {
@@ -33,9 +34,23 @@ function trackActiveFormElement() {
 
   if (isFormField || isContentEditable) {
     activeFormElement = activeEl;
+
+    // Save the selection range for contenteditable elements
+    if (isContentEditable) {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        savedRange = selection.getRangeAt(0).cloneRange();
+        console.log('[Debug] Saved range for contenteditable:', savedRange);
+      }
+    } else {
+      // Clear saved range for form fields (they don't use ranges)
+      savedRange = null;
+    }
+
     console.log('[Debug] Form element tracked for insertion:', activeEl.tagName, isContentEditable ? '(contenteditable)' : '');
   } else {
     activeFormElement = null;
+    savedRange = null;
     console.log('[Debug] No form element tracked (not input/textarea/contenteditable or is password)');
   }
 }
@@ -355,32 +370,37 @@ function renderOverlay(translation) {
 function positionOverlay(host, coords) {
   const container = host.shadowRoot.querySelector('.overlay-container');
 
-  // Default position: above selection
-  let top = coords.y - 10; // 10px gap
-  let left = coords.x;
-
   // Wait for overlay to render to get dimensions
   requestAnimationFrame(() => {
     const rect = container.getBoundingClientRect();
 
-    // Check if overlay fits above selection
-    if (top - rect.height < 0) {
-      // Position below selection
+    // Smart positioning: try to keep overlay visible and near selection
+    let top = coords.y - rect.height - 10; // Default: above selection with 10px gap
+    let left = coords.x;
+
+    // If doesn't fit above (too close to top), position below
+    if (top < 10) {
       top = coords.y + coords.height + 10;
-    } else {
-      // Position above
-      top = top - rect.height;
     }
 
-    // Check horizontal bounds
-    if (left + rect.width > window.innerWidth) {
-      left -= rect.width - window.innerWidth + 10;
+    // If still doesn't fit (below goes off-screen), center vertically
+    if (top + rect.height > window.innerHeight - 10) {
+      top = Math.max(10, (window.innerHeight - rect.height) / 2);
     }
 
-    // Ensure left position is not negative
+    // Horizontal centering with bounds check
+    // Try to center on selection
+    left = coords.x + coords.width / 2 - rect.width / 2;
+
+    // Keep within horizontal bounds
+    if (left + rect.width > window.innerWidth - 10) {
+      left = window.innerWidth - rect.width - 10;
+    }
     if (left < 10) {
       left = 10;
     }
+
+    console.log('[Debug] Overlay positioned at:', { top, left, coords, rectHeight: rect.height });
 
     container.style.top = `${top}px`;
     container.style.left = `${left}px`;
@@ -524,7 +544,11 @@ async function copyToClipboard(text) {
 
 // Insert translation into active form element
 function insertTranslation(translation) {
+  console.log('[Debug] Insert button clicked! Translation:', translation);
+  console.log('[Debug] activeFormElement:', activeFormElement);
+
   if (!activeFormElement) {
+    console.log('[Debug] ERROR: No activeFormElement');
     showErrorToast('No text field selected');
     return;
   }
@@ -535,31 +559,83 @@ function insertTranslation(translation) {
       activeFormElement.contentEditable === 'true' ||
       activeFormElement.contentEditable === 'plaintext-only';
 
+    console.log('[Debug] isContentEditable:', isContentEditable);
+    console.log('[Debug] contentEditable value:', activeFormElement.contentEditable);
+
     if (isContentEditable) {
-      // Handle contenteditable elements (modern comment systems like Reddit, Facebook)
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
+      console.log('[Debug] Handling contenteditable insertion...');
+
+      // Use saved range if available, otherwise try to get current selection
+      let range = savedRange;
+
+      if (!range) {
+        const selection = window.getSelection();
+        console.log('[Debug] No saved range, using current selection. rangeCount:', selection.rangeCount);
+
+        if (selection.rangeCount > 0) {
+          range = selection.getRangeAt(0);
+        }
+      } else {
+        console.log('[Debug] Using saved range:', savedRange);
+      }
+
+      if (range) {
+        console.log('[Debug] Range start:', range.startContainer.nodeValue || range.startContainer.nodeName, 'offset:', range.startOffset);
+        console.log('[Debug] Range end:', range.endContainer.nodeValue || range.endContainer.nodeName, 'offset:', range.endOffset);
+
+        // Delete selected content
         range.deleteContents();
-        range.insertNode(document.createTextNode(translation));
+        console.log('[Debug] Deleted selected content');
+
+        // Insert translation
+        const textNode = document.createTextNode(translation);
+        range.insertNode(textNode);
+        console.log('[Debug] Inserted translation text node');
 
         // Move cursor to end of inserted text
-        range.collapse(false);
+        range.setStartAfter(textNode);
+        range.collapse(true);
+
+        // Restore selection
+        const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(range);
+        console.log('[Debug] Cursor positioned after insertion');
+
+        // Clear saved range after use
+        savedRange = null;
       } else {
         // Fallback: replace all content
+        console.log('[Debug] No range available, replacing all content');
         activeFormElement.textContent = translation;
       }
 
-      // Trigger input event for React/Vue
-      activeFormElement.dispatchEvent(new Event('input', { bubbles: true }));
+      // Trigger input events for React/Vue (Reddit uses React)
+      // Use InputEvent with more realistic properties
+      activeFormElement.dispatchEvent(new InputEvent('beforeinput', {
+        bubbles: true,
+        cancelable: true,
+        inputType: 'insertText',
+        data: translation
+      }));
+      activeFormElement.dispatchEvent(new InputEvent('input', {
+        bubbles: true,
+        cancelable: false,
+        inputType: 'insertText',
+        data: translation
+      }));
       activeFormElement.dispatchEvent(new Event('change', { bubbles: true }));
+      console.log('[Debug] Dispatched beforeinput/input/change events');
     } else {
+      console.log('[Debug] Handling traditional input/textarea insertion...');
+
       // Handle traditional input/textarea elements
       const start = activeFormElement.selectionStart;
       const end = activeFormElement.selectionEnd;
       const currentValue = activeFormElement.value;
+
+      console.log('[Debug] Selection range:', start, '-', end);
+      console.log('[Debug] Current value:', currentValue);
 
       // Replace selected text with translation
       const newValue =
@@ -568,24 +644,41 @@ function insertTranslation(translation) {
         currentValue.substring(end);
 
       activeFormElement.value = newValue;
+      console.log('[Debug] New value set:', newValue);
 
       // Set cursor position after inserted text
       const newCursorPos = start + translation.length;
       activeFormElement.selectionStart = newCursorPos;
       activeFormElement.selectionEnd = newCursorPos;
+      console.log('[Debug] Cursor positioned at:', newCursorPos);
 
-      // Trigger input event for frameworks that listen to it
-      activeFormElement.dispatchEvent(new Event('input', { bubbles: true }));
+      // Trigger input events for frameworks that listen to it
+      activeFormElement.dispatchEvent(new InputEvent('beforeinput', {
+        bubbles: true,
+        cancelable: true,
+        inputType: 'insertText',
+        data: translation
+      }));
+      activeFormElement.dispatchEvent(new InputEvent('input', {
+        bubbles: true,
+        cancelable: false,
+        inputType: 'insertText',
+        data: translation
+      }));
       activeFormElement.dispatchEvent(new Event('change', { bubbles: true }));
+      console.log('[Debug] Dispatched beforeinput/input/change events');
     }
 
     // Focus the element
     activeFormElement.focus();
+    console.log('[Debug] Element focused');
 
     showSuccessToast('Translation inserted!');
     destroyOverlay();
+    console.log('[Debug] Insert completed successfully');
   } catch (error) {
-    console.error('Failed to insert:', error);
+    console.error('[Debug] Insert failed with error:', error);
+    console.error('[Debug] Error stack:', error.stack);
     showErrorToast('Failed to insert translation');
   }
 }
