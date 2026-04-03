@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Translate Icon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .icon-container {
+            width: 512px;
+            height: 512px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 100px;
+        }
+
+        .icon-content {
+            position: relative;
+            width: 340px;
+            height: 340px;
+        }
+
+        /* Globe circle */
+        .globe {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 24px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            top: 30px;
+            left: 30px;
+        }
+
+        /* Language lines */
+        .lang-line {
+            position: absolute;
+            background: white;
+            border-radius: 100px;
+        }
+
+        .line-vertical {
+            width: 6px;
+            height: 200px;
+            left: 167px;
+            top: 70px;
+        }
+
+        .line-horizontal {
+            height: 6px;
+            width: 200px;
+            top: 167px;
+            left: 70px;
+        }
+
+        .line-arc-1 {
+            width: 140px;
+            height: 140px;
+            border: 6px solid white;
+            border-radius: 50%;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            top: 100px;
+            left: 100px;
+            transform: rotate(-45deg);
+        }
+
+        .line-arc-2 {
+            width: 140px;
+            height: 140px;
+            border: 6px solid white;
+            border-radius: 50%;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            top: 100px;
+            left: 100px;
+            transform: rotate(-45deg);
+        }
+
+        /* Letter A (for Alphabet/All languages) */
+        .letter-a {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            top: 120px;
+            left: 120px;
+            font-size: 110px;
+            font-weight: 900;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="icon-container">
+        <div class="icon-content">
+            <div class="globe"></div>
+            <div class="lang-line line-vertical"></div>
+            <div class="lang-line line-horizontal"></div>
+            <div class="lang-line line-arc-1"></div>
+            <div class="lang-line line-arc-2"></div>
+            <div class="letter-a">A</div>
+        </div>
+    </div>
+</body>
+</html>
