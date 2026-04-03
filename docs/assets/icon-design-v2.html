@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Translate Icon - Simplified</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .icon-container {
+            width: 512px;
+            height: 512px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 110px;
+        }
+
+        .icon-content {
+            position: relative;
+            width: 360px;
+            height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Simple letter "A" design */
+        .letter {
+            font-size: 280px;
+            font-weight: 900;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            text-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.2),
+                0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Translation arrows (simple double arrow) */
+        .arrows {
+            position: absolute;
+            bottom: 60px;
+            right: 60px;
+            width: 120px;
+            height: 80px;
+            z-index: 3;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        /* Right arrow */
+        .arrow-right {
+            border-width: 15px 0 15px 40px;
+            border-color: transparent transparent transparent white;
+            top: 0;
+            left: 0;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+        }
+
+        /* Left arrow */
+        .arrow-left {
+            border-width: 15px 40px 15px 0;
+            border-color: transparent white transparent transparent;
+            bottom: 0;
+            right: 0;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+        }
+
+        /* Globe circle (subtle background) */
+        .globe-circle {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border: 8px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            top: 20px;
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="icon-container">
+        <div class="icon-content">
+            <div class="globe-circle"></div>
+            <div class="letter">A</div>
+            <div class="arrows">
+                <div class="arrow arrow-right"></div>
+                <div class="arrow arrow-left"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
