@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "fbem": {
+      "command": "/Users/february10/fbem/.venv/bin/fbem-mcp"
+    }
+  }
+}
