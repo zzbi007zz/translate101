@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zalo Auto Sender</string>
+    <string name="accessibility_description">Zalo Auto Sender uses accessibility service to automate message sending in Zalo. The service only interacts with the Zalo app (com.zing.zalo) and does not read content from other apps.</string>
+    <string name="notification_task_channel_name">Task Status</string>
+    <string name="notification_fgs_channel_name">Automation Running</string>
+    <string name="notification_task_sent_title">Message Sent</string>
+    <string name="notification_task_failed_title">Message Failed</string>
+    <string name="notification_task_sent_body">Message sent to %1$s</string>
+    <string name="notification_task_failed_body">Failed: %1$s</string>
+    <string name="schedule_button">Schedule Send</string>
+    <string name="recipient_label">Zalo User Name</string>
+    <string name="message_label">Message</string>
+    <string name="template_label">Template (optional)</string>
+    <string name="pick_date">Pick Date</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="no_messages">No scheduled messages yet</string>
+    <string name="no_templates">No templates yet</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_templates">Templates</string>
+    <string name="nav_settings">Settings</string>
+</resources>
