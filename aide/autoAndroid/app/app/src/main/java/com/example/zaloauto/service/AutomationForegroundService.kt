@@ -55,8 +55,8 @@ class AutomationForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun executeAutomation(messageId: Long) {
-        // 1. Acquire wake lock (60s max)
-        wakeLock.acquire(60_000L)
+        // 1. Acquire wake lock (120s max, covering cold Zalo start + all step timeouts)
+        wakeLock.acquire(120_000L)
 
         val repo = MessageRepository(
             ZaloAutoApp.getInstance().database.scheduledMessageDao(),
@@ -111,10 +111,10 @@ class AutomationForegroundService : Service() {
         repo: MessageRepository
     ) {
         val service = ZaloAutomationService.instance
-        if (service == null) {
+        if (service == null || !service.isAlive()) {
             wakeLock.release()
-            repo.markFailed(message.id, "Accessibility service not enabled")
-            notifyStatus(message.id, false, "Accessibility service not enabled")
+            repo.markFailed(message.id, "Accessibility service not running")
+            notifyStatus(message.id, false, "Accessibility service not running")
             stopSelf()
             return
         }

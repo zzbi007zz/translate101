@@ -86,7 +86,7 @@ class ZaloAutomationSteps(private val service: ZaloAutomationService) {
 
     private fun stepFindSearch() {
         currentStep = Step.FINDING_SEARCH
-        val ids = ZaloElementIds.forInstalledVersion(service)
+        val ids = ZaloElementIds.forInstalledVersion(service) ?: throw IllegalStateException("Unsupported Zalo version")
         val root = nodeFinder.getRootSafely(service::rootInActiveWindow) ?: return
         try {
             // Try by content description first (most reliable across versions)
@@ -159,8 +159,8 @@ class ZaloAutomationSteps(private val service: ZaloAutomationService) {
 
     private fun stepWaitChat() {
         currentStep = Step.WAITING_CHAT
+        val ids = ZaloElementIds.forInstalledVersion(service) ?: throw IllegalStateException("Unsupported Zalo version")
         val deadline = SystemClock.uptimeMillis() + 10_000L
-        val ids = ZaloElementIds.forInstalledVersion(service)
         while (SystemClock.uptimeMillis() < deadline) {
             val root = service.rootInActiveWindow ?: run {
                 SystemClock.sleep(300)
@@ -231,7 +231,7 @@ class ZaloAutomationSteps(private val service: ZaloAutomationService) {
 
     private fun stepTapSend() {
         currentStep = Step.SENDING
-        val ids = ZaloElementIds.forInstalledVersion(service)
+        val ids = ZaloElementIds.forInstalledVersion(service) ?: throw IllegalStateException("Unsupported Zalo version")
         val deadline = SystemClock.uptimeMillis() + 3_000L
         while (SystemClock.uptimeMillis() < deadline) {
             val root = service.rootInActiveWindow ?: run {
@@ -263,6 +263,7 @@ class ZaloAutomationSteps(private val service: ZaloAutomationService) {
             msg.contains("login") || msg.contains("\u0110\u0103ng nh\u1eadp") -> ErrorCategory.TERMINAL  // "Dang nhap"
             msg.contains("mismatch") -> ErrorCategory.TERMINAL
             msg.contains("Root window null") -> ErrorCategory.TRANSIENT
+            msg.contains("Unsupported Zalo version") -> ErrorCategory.TERMINAL
             else -> ErrorCategory.TRANSIENT
         }
     }

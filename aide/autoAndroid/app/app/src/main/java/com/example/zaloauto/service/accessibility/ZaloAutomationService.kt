@@ -32,6 +32,12 @@ class ZaloAutomationService : AccessibilityService() {
         super.onDestroy()
     }
 
+    /**
+     * Check whether the service instance is still alive (not force-killed by OS).
+     * The static reference can survive a process kill without onDestroy being called.
+     */
+    fun isAlive(): Boolean = rootInActiveWindow != null
+
     companion object {
         @Volatile
         var instance: ZaloAutomationService? = null

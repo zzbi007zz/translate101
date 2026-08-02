@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 /**
  * Maps Zalo version to UI element identifiers.
  * Element IDs change between Zalo versions; this mapping allows graceful degradation.
+ * Returns null for unknown versions so callers can abort with a clear TERMINAL error.
  */
 object ZaloElementIds {
 
@@ -34,19 +35,20 @@ object ZaloElementIds {
     )
 
     /**
-     * Returns element IDs for the currently installed Zalo version.
-     * Falls back to the first entry in the map if version is unknown.
+     * Returns element IDs for the currently installed Zalo version,
+     * or null if the version is unmapped (unknown/unsupported).
+     * Callers must handle null with a TERMINAL error — no silent fallback.
      */
-    fun forInstalledVersion(context: Context): Ids {
+    fun forInstalledVersion(context: Context): Ids? {
         return try {
             val info = context.packageManager.getPackageInfo(
                 "com.zing.zalo", 0
             )
-            val version = info.versionName ?: "unknown"
+            val version = info.versionName ?: return null
             val majorMinor = version.split(".").take(2).joinToString(".")
-            versionMap[majorMinor] ?: versionMap.values.first()
+            versionMap[majorMinor]
         } catch (e: PackageManager.NameNotFoundException) {
-            versionMap.values.first()
+            null
         }
     }
 }
